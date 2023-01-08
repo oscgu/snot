@@ -10,7 +10,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-type TaMode uint
+type EditorMode uint
 
 const (
 	lightBlue  = lipgloss.Color("#3490dc")
@@ -20,8 +20,10 @@ const (
 	purpBlue   = lipgloss.Color("#6574cd")
 	orange     = lipgloss.Color("#f6993f")
 	pink       = lipgloss.Color("#f66d9b")
+)
 
-	Edit TaMode = iota
+const (
+	Edit EditorMode = iota
 	View
 )
 
@@ -38,11 +40,11 @@ type EditorModel struct {
 	err       error
 	title     string
 	date      time.Time
-	mode      TaMode
+	mode      EditorMode
 	cancelled bool
 }
 
-func CreateModel(ta textarea.Model, title string, mode TaMode) EditorModel {
+func CreateModel(ta textarea.Model, title string, mode EditorMode) EditorModel {
 	initModel := EditorModel{
 		textarea: ta,
 		title:    title,

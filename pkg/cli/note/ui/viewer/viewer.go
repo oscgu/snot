@@ -19,7 +19,9 @@ type viewState uint
 const (
 	listHeight = 10
 	width      = 25
+)
 
+const (
 	topcicView viewState = iota
 	titleView
 	noteView
