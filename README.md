@@ -14,11 +14,14 @@ dir where you run it (for now...). There you can change your name
 
 ## Usage
 
-Save a note:
+Write a note:
 
 `$ go run main.go note [topic] (title)`
 
+![editor](https://user-images.githubusercontent.com/94227101/211210472-5f4b188f-8139-4389-a2b2-f28ca4b89ce3.png)
 
 Browse through notes:
 
 `$ go run main.go view `
+
+![view](https://user-images.githubusercontent.com/94227101/211210512-507ae398-ca4a-4b56-b988-a301459a89d6.png)
