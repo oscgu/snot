@@ -149,7 +149,7 @@ func (m model) View() string {
 						Find(&content)
 
 					taC := textarea.New()
-					taC.Placeholder = strings.Join(content, " ")
+					taC.SetValue(strings.Join(content, " "))
 					m.text = ta.CreateModel(taC, m.selTitle, ta.View)
 				}
 			}
