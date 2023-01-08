@@ -9,8 +9,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "snot",
-	Short: "snot - a simple cli tool to take notes",
-	Long:  "snot - is a simple cli tool to take notes",
+	Short: "A simple cli tool to take notes",
 	Run: func(cmd *cobra.Command, args []string) {
 	},
 }

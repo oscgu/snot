@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
@@ -15,14 +16,26 @@ func handleErr(err error) {
 	os.Exit(2)
 }
 
-func Init(path string) {
-	Conf.ParseOrDefault(path)
+func Init() {
+	Conf.ParseOrDefault()
 }
 
-func (config *Config) ParseOrDefault(path string) {
-	f, err := os.Open(path)
+func (config *Config) ParseOrDefault() {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		handleErr(err)
+	}
+
+	fullDirPath := filepath.Join(homeDir, ".snot")
+	if err := os.MkdirAll(fullDirPath, 0700); err != nil {
+		handleErr(err)
+	}
+
+	fullConfPath := filepath.Join(fullDirPath, "config.yml")
+
+	f, err := os.Open(fullConfPath)
 	if os.IsNotExist(err) {
-		createDefaultConf(path)
+		createDefaultConf(fullConfPath)
 	} else {
 		decoder := yaml.NewDecoder(f)
 		if err = decoder.Decode(config); err != nil {
@@ -35,7 +48,7 @@ func (config *Config) ParseOrDefault(path string) {
 	defer f.Close()
 }
 
-func createDefaultConf(path string) {
+func createDefaultConf(fullpath string) {
 	conf := Config{
 		User: User{
 			Name:  "test-user",
@@ -53,7 +66,7 @@ func createDefaultConf(path string) {
 		fmt.Println(err)
 	}
 
-	if err = ioutil.WriteFile(path, data, 0644); err != nil {
+	if err = ioutil.WriteFile(fullpath, data, 0644); err != nil {
 		fmt.Println(err)
 	}
 }

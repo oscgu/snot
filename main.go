@@ -8,7 +8,7 @@ import (
 
 func main() {
 	db.Init()
-	config.Init("config.yml")
+	config.Init()
 
 	cli.Execute()
 }

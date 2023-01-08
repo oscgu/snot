@@ -8,9 +8,7 @@ Really needs a cleanup and some bugfixing. Use at your own risk!
 
 ## Config
 
-A config file is created on first run. You can find it in the same
-
-dir where you run it (for now...). There you can change your name
+A config file is created on first run which you can find at `~/.snot/config.yml`
 
 ## Usage
 
