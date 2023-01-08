@@ -1,7 +1,8 @@
-package textarea
+package editor
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/charmbracelet/bubbles/textarea"
@@ -32,7 +33,7 @@ var (
 	saveStyle   = lipgloss.NewStyle().Foreground(lightGreen).Bold(true)
 )
 
-type Model struct {
+type EditorModel struct {
 	textarea  textarea.Model
 	err       error
 	title     string
@@ -41,8 +42,8 @@ type Model struct {
 	cancelled bool
 }
 
-func CreateModel(ta textarea.Model, title string, mode TaMode) Model {
-	initModel := Model{
+func CreateModel(ta textarea.Model, title string, mode TaMode) EditorModel {
+	initModel := EditorModel{
 		textarea: ta,
 		title:    title,
 		err:      nil,
@@ -53,11 +54,11 @@ func CreateModel(ta textarea.Model, title string, mode TaMode) Model {
 	return initModel
 }
 
-func (m Model) Init() tea.Cmd {
+func (m EditorModel) Init() tea.Cmd {
 	return textarea.Blink
 }
 
-func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *EditorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmds []tea.Cmd
 	var cmd tea.Cmd
 
@@ -90,28 +91,22 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-func (m Model) View() string {
+func (m EditorModel) View() string {
 	termWidth := m.textarea.Width() + 6
 
+	str := strings.Builder{}
+	str.WriteString("\n" + dateStyle.Width(termWidth).Align(lipgloss.Right).Render(m.date.Format("2006-01-02")) + "\n\n")
+	str.WriteString(titleStyle.Width(termWidth).Align(lipgloss.Center).Render(m.title) + "\n\n")
+	str.WriteString(m.textarea.View() + "\n\n")
+
 	if m.mode == Edit {
-		return fmt.Sprintf(
-			"\n%s\n\n%s\n\n%s\n\n%s",
-			dateStyle.Width(termWidth).Align(lipgloss.Right).Render(m.date.Format("2006-01-02")),
-			titleStyle.Width(termWidth).Align(lipgloss.Center).Render(m.title),
-			m.textarea.View(),
-			lipgloss.NewStyle().Width(termWidth).Align(lipgloss.Center).Render("ctrl+"+saveStyle.Render("s")+"("+saveStyle.Render("ave")+")"+"  "+"ctrl+"+cancelStyle.Render("c")+"("+cancelStyle.Render("ancel")+")"),
-		) + "\n\n"
+		str.WriteString(lipgloss.NewStyle().Width(termWidth).Align(lipgloss.Center).Render("ctrl+"+saveStyle.Render("s")+"("+saveStyle.Render("ave")+")"+"  "+"ctrl+"+cancelStyle.Render("c")+"("+cancelStyle.Render("ancel")+")") + "\n\n")
 	}
 
-	return fmt.Sprintf(
-		"\n%s\n\n%s\n\n%s\n\n",
-		dateStyle.Width(termWidth).Align(lipgloss.Right).Render(m.date.Format("2006-01-02")),
-		titleStyle.Width(termWidth).Align(lipgloss.Center).Render(m.title),
-		m.textarea.View(),
-	) + "\n\n"
+	return str.String()
 }
 
-func TextArea(title string) (string, bool, time.Time) {
+func Create(title string) (string, bool, time.Time) {
 	ta := textarea.New()
 	ta.CharLimit = 200
 	ta.ShowLineNumbers = true

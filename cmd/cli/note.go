@@ -6,7 +6,7 @@ import (
 
 	config "github.com/oscgu/snot/pkg/cli/config"
 	note "github.com/oscgu/snot/pkg/cli/note"
-	ui "github.com/oscgu/snot/pkg/cli/note/ui/textarea"
+	editor "github.com/oscgu/snot/pkg/cli/note/ui/editor"
 	snotdb "github.com/oscgu/snot/pkg/cli/snotdb"
 	"github.com/spf13/cobra"
 )
@@ -17,7 +17,7 @@ var noteCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		title := strings.Join(args[1:], " ")
-		text, cancelled, created := ui.TextArea(title)
+		text, cancelled, created := editor.Create(title)
 
 		if cancelled {
 			return
