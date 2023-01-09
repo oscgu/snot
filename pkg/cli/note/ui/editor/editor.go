@@ -8,19 +8,10 @@ import (
 	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	theme "github.com/oscgu/snot/pkg/cli/note/ui/theme"
 )
 
 type EditorMode uint
-
-const (
-	lightBlue  = lipgloss.Color("#3490dc")
-	lightGreen = lipgloss.Color("#38c172")
-	lightRed   = lipgloss.Color("#e3342f")
-	darkPurple = lipgloss.Color("#9561e2")
-	purpBlue   = lipgloss.Color("#6574cd")
-	orange     = lipgloss.Color("#f6993f")
-	pink       = lipgloss.Color("#f66d9b")
-)
 
 const (
 	Edit EditorMode = iota
@@ -28,29 +19,27 @@ const (
 )
 
 var (
-	titleStyle = lipgloss.NewStyle().Foreground(lightBlue).Bold(true)
-	dateStyle  = lipgloss.NewStyle().Foreground(pink)
+	titleStyle = lipgloss.NewStyle().Foreground(theme.Blue).Bold(true)
+	dateStyle  = lipgloss.NewStyle().Foreground(theme.Pink)
 
-	cancelStyle = lipgloss.NewStyle().Foreground(lightRed).Bold(true)
-	saveStyle   = lipgloss.NewStyle().Foreground(lightGreen).Bold(true)
+	cancelStyle = lipgloss.NewStyle().Foreground(theme.Red).Bold(true)
+	saveStyle   = lipgloss.NewStyle().Foreground(theme.Green).Bold(true)
 )
 
 type EditorModel struct {
 	textarea  textarea.Model
-	err       error
 	title     string
 	date      time.Time
 	mode      EditorMode
 	cancelled bool
 }
 
-func CreateModel(ta textarea.Model, title string, mode EditorMode) EditorModel {
+func CreateModel(ta textarea.Model, title string, mode EditorMode, date time.Time) EditorModel {
 	initModel := EditorModel{
 		textarea: ta,
 		title:    title,
-		err:      nil,
 		mode:     mode,
-		date:     time.Now(),
+		date:     date,
 	}
 
 	return initModel
@@ -82,9 +71,6 @@ func (m *EditorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmds = append(cmds, cmd)
 			}
 		}
-	case error:
-		m.err = msg
-		return m, nil
 	}
 
 	m.textarea, cmd = m.textarea.Update(msg)
@@ -108,15 +94,15 @@ func (m EditorModel) View() string {
 	return str.String()
 }
 
-func Create(title string) (string, bool, time.Time) {
+func Create(title string, date time.Time) (string, bool, time.Time) {
 	ta := textarea.New()
 	ta.CharLimit = 200
 	ta.ShowLineNumbers = true
 	ta.FocusedStyle.CursorLine.Background(lipgloss.NoColor{})
-	ta.FocusedStyle.Prompt.Foreground(purpBlue)
+	ta.FocusedStyle.Prompt.Foreground(theme.PurpBlue)
 	ta.Focus()
 
-	m := CreateModel(ta, title, Edit)
+	m := CreateModel(ta, title, Edit, date)
 	p := tea.NewProgram(&m)
 
 	if err := p.Start(); err != nil {

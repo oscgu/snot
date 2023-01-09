@@ -10,15 +10,19 @@ import (
 	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	note "github.com/oscgu/snot/pkg/cli/note"
 	editor "github.com/oscgu/snot/pkg/cli/note/ui/editor"
+	theme "github.com/oscgu/snot/pkg/cli/note/ui/theme"
 	"github.com/oscgu/snot/pkg/cli/snotdb"
 )
 
 type viewState uint
 
 const (
-	listHeight = 10
-	width      = 25
+	listHeight = 15
+	boxWidth   = 20
+	boxHeight  = 18
+	dot        = "•"
 )
 
 const (
@@ -28,23 +32,24 @@ const (
 )
 
 var (
-	titleStyle        = lipgloss.NewStyle().MarginLeft(2)
-	itemStyle         = lipgloss.NewStyle().PaddingLeft(2)
-	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
+	titleStyle = lipgloss.NewStyle().MarginLeft(2)
+	itemStyle  = lipgloss.NewStyle().MarginLeft(2)
+
+	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(theme.Purple)
 	paginationStyle   = list.DefaultStyles().PaginationStyle.PaddingLeft(4)
-	helpStyle         = list.DefaultStyles().HelpStyle.PaddingLeft(4).PaddingBottom(1)
+	helpStyle         = list.DefaultStyles().HelpStyle.PaddingLeft(1).PaddingBottom(1)
 
 	focusedModelStyle = lipgloss.NewStyle().
-				Width(width).
-				Height(5).
-				Align(lipgloss.Center).
+				Width(boxWidth).
+				Height(boxHeight).
+				Align(lipgloss.Left).
 				BorderStyle(lipgloss.NormalBorder()).
-				BorderForeground(lipgloss.Color("69"))
+				BorderForeground(theme.Blue)
 
 	modelStyle = lipgloss.NewStyle().
-			Width(width).
-			Height(5).
-			Align(lipgloss.Center).
+			Width(boxWidth).
+			Height(boxHeight).
+			Align(lipgloss.Left).
 			BorderStyle(lipgloss.HiddenBorder())
 
 	noteStyle = lipgloss.NewStyle().Padding(1, 2, 1, 2)
@@ -71,7 +76,7 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 	fn := itemStyle.Render
 	if index == m.Index() {
 		fn = func(s string) string {
-			return selectedItemStyle.Render("> " + s)
+			return selectedItemStyle.Render(dot + " " + s)
 		}
 	}
 
@@ -150,16 +155,15 @@ func (m viewerModel) View() string {
 				if ok {
 					m.selTitle = string(i)
 
-					var content []string
+					var n note.Note
 					snotdb.Db.Table("notes").
-						Select("content").
 						Where("topic = ?", m.selTopic).
 						Where("title = ?", m.selTitle).
-						Find(&content)
+						Find(&n)
 
 					textArea := textarea.New()
-					textArea.SetValue(strings.Join(content, " "))
-					m.editor = editor.CreateModel(textArea, m.selTitle, editor.View)
+					textArea.SetValue(n.Content)
+					m.editor = editor.CreateModel(textArea, m.selTitle, editor.View, n.Created)
 				}
 			}
 		}
@@ -173,10 +177,10 @@ func (m viewerModel) View() string {
 func Create(items []string) {
 	list := newBaseList(items)
 	list.Title = "Topics"
-	list.DisableQuitKeybindings()
 	list.Styles.Title = titleStyle
 	list.Styles.PaginationStyle = paginationStyle
 	list.Styles.HelpStyle = helpStyle
+	list.DisableQuitKeybindings()
 
 	m := &viewerModel{topicList: list}
 

@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -17,7 +18,7 @@ var noteCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		title := strings.Join(args[1:], " ")
-		text, cancelled, created := editor.Create(title)
+		text, cancelled, created := editor.Create(title, time.Now())
 
 		if cancelled {
 			return
@@ -33,6 +34,9 @@ var noteCmd = &cobra.Command{
 
 		if snotdb.Db.Model(n).Where("title = ?", n.Title).Updates(note.Note{Content: n.Content, LastChanged: time.Now()}).RowsAffected == 0 {
 			snotdb.Db.Create(n)
+			fmt.Println("Note created.")
+		} else {
+			fmt.Println("Note updated.")
 		}
 	},
 }

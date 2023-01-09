@@ -8,7 +8,7 @@ import (
 
 var viewCmd = &cobra.Command{
 	Use:   "view",
-	Short: "Browse through your notes",
+	Short: "Shows you all your notes",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		var topics []string
