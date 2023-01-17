@@ -1,4 +1,4 @@
-package cli
+package commands
 
 import (
 	"fmt"
@@ -10,8 +10,6 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "snot",
 	Short: "A simple cli tool to take notes",
-	Run: func(cmd *cobra.Command, args []string) {
-	},
 }
 
 func Execute() {

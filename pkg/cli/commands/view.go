@@ -1,4 +1,4 @@
-package cli
+package commands
 
 import (
 	"github.com/oscgu/snot/pkg/cli/note/ui/viewer"
@@ -7,9 +7,10 @@ import (
 )
 
 var viewCmd = &cobra.Command{
-	Use:   "view",
-	Short: "Shows you all your notes",
-	Args:  cobra.NoArgs,
+	Use:                   "view",
+	Short:                 "Browse through all your notes",
+	Args:                  cobra.NoArgs,
+	DisableFlagsInUseLine: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var topics []string
 		snotdb.Db.Table("notes").Distinct("topic").Scan(&topics)

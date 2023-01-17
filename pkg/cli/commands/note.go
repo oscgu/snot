@@ -1,4 +1,4 @@
-package cli
+package commands
 
 import (
 	"fmt"
@@ -13,9 +13,10 @@ import (
 )
 
 var noteCmd = &cobra.Command{
-	Use:   "note [topic] (title)",
-	Short: "Create a new note",
-	Args:  cobra.MinimumNArgs(2),
+	Use:                   "note [topic] (title)",
+	Short:                 "Create a new note",
+	Args:                  cobra.MinimumNArgs(2),
+	DisableFlagsInUseLine: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		title := strings.Join(args[1:], " ")
 		text, cancelled, created := editor.Create(title, time.Now())

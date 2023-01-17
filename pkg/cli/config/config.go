@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/charmbracelet/lipgloss"
+	"github.com/oscgu/snot/pkg/cli/note/ui/theme"
 	"gopkg.in/yaml.v3"
 )
 
@@ -18,9 +20,13 @@ func handleErr(err error) {
 
 func Init() {
 	Conf.ParseOrDefault()
+	style := lipgloss.NewStyle().Foreground(theme.Green)
+	text := lipgloss.NewStyle().Bold(true)
+
+	fmt.Println(style.Render(theme.Checkmark) + " " + text.Render("Create config"))
 }
 
-func (config *Config) ParseOrDefault() {
+func GetConfDir() string {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		handleErr(err)
@@ -31,7 +37,12 @@ func (config *Config) ParseOrDefault() {
 		handleErr(err)
 	}
 
-	fullConfPath := filepath.Join(fullDirPath, "config.yml")
+	return fullDirPath
+}
+
+func (config *Config) ParseOrDefault() {
+	confDir := GetConfDir()
+	fullConfPath := filepath.Join(confDir, "config.yml")
 
 	f, err := os.Open(fullConfPath)
 	if os.IsNotExist(err) {
@@ -63,10 +74,10 @@ func createDefaultConf(fullpath string) {
 
 	data, err := yaml.Marshal(conf)
 	if err != nil {
-		fmt.Println(err)
+		handleErr(err)
 	}
 
 	if err = ioutil.WriteFile(fullpath, data, 0644); err != nil {
-		fmt.Println(err)
+		handleErr(err)
 	}
 }
