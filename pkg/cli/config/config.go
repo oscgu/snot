@@ -6,8 +6,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/charmbracelet/lipgloss"
-	"github.com/oscgu/snot/pkg/cli/note/ui/theme"
 	"gopkg.in/yaml.v3"
 )
 
@@ -20,10 +18,6 @@ func handleErr(err error) {
 
 func Init() {
 	Conf.ParseOrDefault()
-	style := lipgloss.NewStyle().Foreground(theme.Green)
-	text := lipgloss.NewStyle().Bold(true)
-
-	fmt.Println(style.Render(theme.Checkmark) + " " + text.Render("Create config"))
 }
 
 func GetConfDir() string {

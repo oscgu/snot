@@ -10,20 +10,42 @@ Really needs a cleanup and some bugfixing. Use at your own risk!
 
 A config file is created on first run which you can find at `~/.snot/config.yml`
 
+The database resides in the same dir
+
+```
+user:
+    name: Mustermann
+    group: DevOps
+server:
+    address: ""
+    port: ""
+    active: false
+```
+
+The server part doesn't do anything (for now).
+
+## Installation
+
+`$ sudo make`
+
 ## Usage
-
-Initilizing the cli:
-
-`$ go run cmd/cli/main.go init`
 
 Writing a note:
 
-`$ go run cmd/cli/main.go note [topic] (title)`
+`$ snot note [topic] (title)`
 
 ![editor](https://user-images.githubusercontent.com/94227101/211210472-5f4b188f-8139-4389-a2b2-f28ca4b89ce3.png)
 
 Browsing through notes:
 
-`$ go run cmd/cli/main.go view `
+`$ snot view `
 
 ![view](https://user-images.githubusercontent.com/94227101/211210512-507ae398-ca4a-4b56-b988-a301459a89d6.png)
+
+## Uninstall
+
+`$ make clean`
+
+Deleteting the config and db:
+
+`$ rm -rf ~/.snot`

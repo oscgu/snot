@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/charmbracelet/lipgloss"
 	c "github.com/oscgu/snot/pkg/cli/config"
 	cli "github.com/oscgu/snot/pkg/cli/note"
-	"github.com/oscgu/snot/pkg/cli/note/ui/theme"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -24,8 +22,4 @@ func Init() {
 	}
 
 	Db.AutoMigrate(&cli.Note{})
-
-	style := lipgloss.NewStyle().Foreground(theme.Green)
-	text := lipgloss.NewStyle().Bold(true)
-	fmt.Println(style.Render(theme.Checkmark) + " " + text.Render("Initialize database"))
 }
