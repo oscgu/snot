@@ -10,7 +10,6 @@ import (
 	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/oscgu/snot/pkg/cli/config"
 	data "github.com/oscgu/snot/pkg/cli/dataproviders"
 	editor "github.com/oscgu/snot/pkg/cli/note/ui/editor"
 	theme "github.com/oscgu/snot/pkg/cli/note/ui/theme"
@@ -90,7 +89,7 @@ type viewerModel struct {
 	view         viewState
 	selTopic     string
 	selTitle     string
-	dataProvider config.DataProvider
+	dataProvider data.DataProvider
 }
 
 func (m viewerModel) Init() tea.Cmd {

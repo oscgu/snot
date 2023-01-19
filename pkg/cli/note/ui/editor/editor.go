@@ -8,7 +8,6 @@ import (
 	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/oscgu/snot/pkg/cli/config"
 	data "github.com/oscgu/snot/pkg/cli/dataproviders"
 	theme "github.com/oscgu/snot/pkg/cli/note/ui/theme"
 )
@@ -34,7 +33,7 @@ type EditorModel struct {
 	date         time.Time
 	mode         EditorMode
 	cancelled    bool
-	dataProvider config.DataProvider
+	dataProvider data.DataProvider
 }
 
 func CreateModel(ta textarea.Model, title string, mode EditorMode, date time.Time) EditorModel {
