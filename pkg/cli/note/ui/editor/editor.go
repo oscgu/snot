@@ -8,6 +8,8 @@ import (
 	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/oscgu/snot/pkg/cli/config"
+	data "github.com/oscgu/snot/pkg/cli/dataproviders"
 	theme "github.com/oscgu/snot/pkg/cli/note/ui/theme"
 )
 
@@ -27,19 +29,21 @@ var (
 )
 
 type EditorModel struct {
-	textarea  textarea.Model
-	title     string
-	date      time.Time
-	mode      EditorMode
-	cancelled bool
+	textarea     textarea.Model
+	title        string
+	date         time.Time
+	mode         EditorMode
+	cancelled    bool
+	dataProvider config.DataProvider
 }
 
 func CreateModel(ta textarea.Model, title string, mode EditorMode, date time.Time) EditorModel {
 	initModel := EditorModel{
-		textarea: ta,
-		title:    title,
-		mode:     mode,
-		date:     date,
+		textarea:     ta,
+		title:        title,
+		mode:         mode,
+		date:         date,
+		dataProvider: data.GetProvider(),
 	}
 
 	return initModel
@@ -94,7 +98,7 @@ func (m EditorModel) View() string {
 	return str.String()
 }
 
-func Create(title string, date time.Time) (string, bool, time.Time) {
+func Create(topic string, title string, date time.Time) (string, bool, time.Time) {
 	ta := textarea.New()
 	ta.CharLimit = 200
 	ta.ShowLineNumbers = true
@@ -103,6 +107,10 @@ func Create(title string, date time.Time) (string, bool, time.Time) {
 	ta.Focus()
 
 	m := CreateModel(ta, title, Edit, date)
+	note, _ := m.dataProvider.GetNote(topic, title)
+
+	ta.SetValue(note.Content)
+
 	p := tea.NewProgram(&m)
 
 	if err := p.Start(); err != nil {

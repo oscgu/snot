@@ -10,10 +10,10 @@ import (
 	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	note "github.com/oscgu/snot/pkg/cli/note"
+	"github.com/oscgu/snot/pkg/cli/config"
+	data "github.com/oscgu/snot/pkg/cli/dataproviders"
 	editor "github.com/oscgu/snot/pkg/cli/note/ui/editor"
 	theme "github.com/oscgu/snot/pkg/cli/note/ui/theme"
-	"github.com/oscgu/snot/pkg/cli/snotdb"
 )
 
 type viewState uint
@@ -84,12 +84,13 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 }
 
 type viewerModel struct {
-	topicList list.Model
-	titleList list.Model
-	editor    editor.EditorModel
-	view      viewState
-	selTopic  string
-	selTitle  string
+	topicList    list.Model
+	titleList    list.Model
+	editor       editor.EditorModel
+	view         viewState
+	selTopic     string
+	selTitle     string
+	dataProvider config.DataProvider
 }
 
 func (m viewerModel) Init() tea.Cmd {
@@ -117,9 +118,7 @@ func (m viewerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if ok {
 					m.selTopic = string(i)
 
-					var titles []string
-					snotdb.Db.Table("notes").Where("topic = ?", string(i)).Select("title").Find(&titles)
-
+					titles := m.dataProvider.GetTitles(string(i))
 					list := newBaseList(titles)
 					list.DisableQuitKeybindings()
 					list.SetFilteringEnabled(false)
@@ -155,15 +154,11 @@ func (m viewerModel) View() string {
 				if ok {
 					m.selTitle = string(i)
 
-					var n note.Note
-					snotdb.Db.Table("notes").
-						Where("topic = ?", m.selTopic).
-						Where("title = ?", m.selTitle).
-						Find(&n)
+					note, _ := m.dataProvider.GetNote(m.selTopic, m.selTitle)
 
 					textArea := textarea.New()
-					textArea.SetValue(n.Content)
-					m.editor = editor.CreateModel(textArea, m.selTitle, editor.View, n.Created)
+					textArea.SetValue(note.Content)
+					m.editor = editor.CreateModel(textArea, m.selTitle, editor.View, note.Created)
 				}
 			}
 		}
@@ -174,15 +169,18 @@ func (m viewerModel) View() string {
 	return s.String()
 }
 
-func Create(items []string) {
-	list := newBaseList(items)
+func Create() {
+	provider := data.GetProvider()
+	topics := provider.GetTopics()
+
+	list := newBaseList(topics)
 	list.Title = "Topics"
 	list.Styles.Title = titleStyle
 	list.Styles.PaginationStyle = paginationStyle
 	list.Styles.HelpStyle = helpStyle
 	list.DisableQuitKeybindings()
 
-	m := &viewerModel{topicList: list}
+	m := &viewerModel{topicList: list, dataProvider: provider}
 
 	if err := tea.NewProgram(m).Start(); err != nil {
 		fmt.Println("Error running program:", err)

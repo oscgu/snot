@@ -5,7 +5,7 @@ import (
 	"os"
 
 	config "github.com/oscgu/snot/pkg/cli/config"
-	db "github.com/oscgu/snot/pkg/cli/snotdb"
+	db "github.com/oscgu/snot/pkg/cli/dataproviders/snotdb"
 	"github.com/spf13/cobra"
 )
 
