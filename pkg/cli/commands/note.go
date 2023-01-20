@@ -2,6 +2,9 @@ package commands
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"os/exec"
 	"strings"
 	"time"
 
@@ -21,10 +24,35 @@ var noteCmd = &cobra.Command{
 		topic := args[0]
 		title := strings.Join(args[1:], " ")
 
-		text, cancelled, created := editor.Create(topic, title, time.Now())
+		var text string
+		dateTimeNow := time.Now()
 
-		if cancelled {
-			return
+		if config.Conf.Editor != "default" && config.Conf.Editor != "" {
+			cmd := exec.Command(config.Conf.Editor, "/tmp/temp.snot")
+			cmd.Stdin = os.Stdin
+			cmd.Stdout = os.Stdout
+			if err := cmd.Run(); err != nil {
+				fmt.Println(err)
+			}
+
+			fileData, err := ioutil.ReadFile("/tmp/temp.snot")
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			text = string(fileData)
+			if err := os.Remove("/tmp/temp.snot"); err != nil {
+				fmt.Println(err)
+			}
+		} else {
+			var cancelled bool
+
+			text, cancelled = editor.Create(topic, title, dateTimeNow)
+
+			if cancelled {
+				return
+			}
+
 		}
 
 		n := note.Note{
@@ -32,7 +60,7 @@ var noteCmd = &cobra.Command{
 			Title:   title,
 			Author:  config.Conf.User.Name,
 			Content: text,
-			Created: created,
+			Created: dateTimeNow,
 		}
 
 		if d.Snotdb.Db.Model(n).Where("title = ?", n.Title).Updates(note.Note{Content: n.Content, LastChanged: time.Now()}).RowsAffected == 0 {

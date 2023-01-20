@@ -97,7 +97,7 @@ func (m EditorModel) View() string {
 	return str.String()
 }
 
-func Create(topic string, title string, date time.Time) (string, bool, time.Time) {
+func Create(topic string, title string, date time.Time) (string, bool) {
 	ta := textarea.New()
 	ta.CharLimit = 200
 	ta.ShowLineNumbers = true
@@ -116,5 +116,5 @@ func Create(topic string, title string, date time.Time) (string, bool, time.Time
 		fmt.Println(err)
 	}
 
-	return m.textarea.Value(), m.cancelled, m.date
+	return m.textarea.Value(), m.cancelled
 }

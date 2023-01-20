@@ -13,6 +13,7 @@ A config file is created on first run which you can find at `~/.snot/config.yml`
 The database resides in the same dir
 
 ```
+editor: [e.g. vim]             # optional field if you are not happy with the default editor
 user:
     name: Mustermann
     group: DevOps

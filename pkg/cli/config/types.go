@@ -3,6 +3,7 @@ package config
 type Config struct {
 	User   User   `yaml:"user"`
 	Server Server `yaml:"server"`
+	Editor string `yaml:"editor"`
 }
 
 type User struct {

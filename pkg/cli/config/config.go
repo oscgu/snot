@@ -59,6 +59,7 @@ func createDefaultConf(fullpath string) {
 			Name:  "test-user",
 			Group: "test",
 		},
+		Editor: "default",
 		Server: Server{
 			Address: "",
 			Port:    "",
