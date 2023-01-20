@@ -1,20 +1,15 @@
 package config
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 
+	log "github.com/oscgu/snot/internal/log"
 	"gopkg.in/yaml.v3"
 )
 
 var Conf Config
-
-func handleErr(err error) {
-	fmt.Println(err)
-	os.Exit(2)
-}
 
 func Init() {
 	Conf.ParseOrDefault()
@@ -23,12 +18,12 @@ func Init() {
 func GetConfDir() string {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		handleErr(err)
+		log.Fatal(err)
 	}
 
 	fullDirPath := filepath.Join(homeDir, ".snot")
 	if err := os.MkdirAll(fullDirPath, 0700); err != nil {
-		handleErr(err)
+		log.Fatal(err)
 	}
 
 	return fullDirPath
@@ -44,7 +39,7 @@ func (config *Config) ParseOrDefault() {
 	} else {
 		decoder := yaml.NewDecoder(f)
 		if err = decoder.Decode(config); err != nil {
-			handleErr(err)
+			log.Fatal(err)
 		}
 
 		decoder.Decode(config)
@@ -69,10 +64,10 @@ func createDefaultConf(fullpath string) {
 
 	data, err := yaml.Marshal(conf)
 	if err != nil {
-		handleErr(err)
+		log.Fatal(err)
 	}
 
 	if err = ioutil.WriteFile(fullpath, data, 0644); err != nil {
-		handleErr(err)
+		log.Fatal(err)
 	}
 }

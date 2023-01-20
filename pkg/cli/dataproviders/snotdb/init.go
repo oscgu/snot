@@ -1,9 +1,7 @@
 package snotdb
 
 import (
-	"fmt"
-	"os"
-
+	log "github.com/oscgu/snot/internal/log"
 	"github.com/oscgu/snot/pkg/cli/config"
 	"github.com/oscgu/snot/pkg/cli/note"
 	"gorm.io/driver/sqlite"
@@ -16,8 +14,7 @@ func Init() {
 	confDir := config.GetConfDir()
 	db, err := gorm.Open(sqlite.Open(confDir+"/snot.db"), &gorm.Config{})
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(2)
+		log.Fatal(err)
 	}
 
 	Snotdb = &DbProvider{
