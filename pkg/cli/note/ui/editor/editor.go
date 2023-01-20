@@ -1,7 +1,7 @@
 package editor
 
 import (
-	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -113,7 +113,7 @@ func Create(topic string, title string, date time.Time) (string, bool) {
 	p := tea.NewProgram(&m)
 
 	if err := p.Start(); err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 
 	return m.textarea.Value(), m.cancelled

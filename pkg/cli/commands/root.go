@@ -1,9 +1,7 @@
 package commands
 
 import (
-	"fmt"
-	"os"
-
+	"github.com/oscgu/snot/internal/log"
 	config "github.com/oscgu/snot/pkg/cli/config"
 	db "github.com/oscgu/snot/pkg/cli/dataproviders/snotdb"
 	"github.com/spf13/cobra"
@@ -19,7 +17,6 @@ func Execute() {
 	config.Init()
 
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "There was an error executing the command: %s", err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }

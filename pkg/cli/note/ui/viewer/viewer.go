@@ -3,8 +3,9 @@ package viewer
 import (
 	"fmt"
 	"io"
-	"os"
 	"strings"
+
+	log "github.com/oscgu/snot/internal/log"
 
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/textarea"
@@ -182,8 +183,7 @@ func Create() {
 	m := &viewerModel{topicList: list, dataProvider: provider}
 
 	if err := tea.NewProgram(m).Start(); err != nil {
-		fmt.Println("Error running program:", err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 }

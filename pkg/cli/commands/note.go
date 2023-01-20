@@ -1,13 +1,13 @@
 package commands
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
 
+	log "github.com/oscgu/snot/internal/log"
 	config "github.com/oscgu/snot/pkg/cli/config"
 	d "github.com/oscgu/snot/pkg/cli/dataproviders/snotdb"
 	note "github.com/oscgu/snot/pkg/cli/note"
@@ -32,17 +32,17 @@ var noteCmd = &cobra.Command{
 			cmd.Stdin = os.Stdin
 			cmd.Stdout = os.Stdout
 			if err := cmd.Run(); err != nil {
-				fmt.Println(err)
+				log.Fatal(err)
 			}
 
 			fileData, err := ioutil.ReadFile("/tmp/temp.snot")
 			if err != nil {
-				fmt.Println(err)
+				log.Fatal(err)
 			}
 
 			text = string(fileData)
 			if err := os.Remove("/tmp/temp.snot"); err != nil {
-				fmt.Println(err)
+				log.Fatal(err)
 			}
 		} else {
 			var cancelled bool
@@ -63,11 +63,11 @@ var noteCmd = &cobra.Command{
 			Created: dateTimeNow,
 		}
 
-		if d.Snotdb.Db.Model(n).Where("title = ?", n.Title).Updates(note.Note{Content: n.Content, LastChanged: time.Now()}).RowsAffected == 0 {
+		if d.Snotdb.Db.Model(n).Where("title = ?", n.Title).Where("topic = ?", n.Topic).Updates(note.Note{Content: n.Content, LastChanged: time.Now()}).RowsAffected == 0 {
 			d.Snotdb.Db.Create(n)
-			fmt.Println("Note created.")
+			log.Info("Note created")
 		} else {
-			fmt.Println("Note updated.")
+			log.Info("Note upserted")
 		}
 	},
 }
